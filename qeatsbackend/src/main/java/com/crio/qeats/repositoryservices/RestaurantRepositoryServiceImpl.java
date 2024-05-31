@@ -43,7 +43,8 @@ import org.springframework.stereotype.Service;
 @Primary
 public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryService {
 
-
+  @Autowired
+  private RestaurantRepository restaurantRepository;
 
 
   @Autowired
@@ -73,7 +74,7 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
     GlobalConstants.DEFAULT_GEOHASH_PRECISION);
 
 // Query to find restaurants with matching GeoHash and within serving radius
-List<RestaurantEntity> restaurantEntities = mongoTemplate.findAll(RestaurantEntity.class);
+List<RestaurantEntity> restaurantEntities = restaurantRepository.findAll();
 
 for (RestaurantEntity restaurantEntity : restaurantEntities) {
     if (isRestaurantCloseByAndOpen(restaurantEntity, currentTime, latitude, longitude, 
