@@ -27,13 +27,26 @@ public class RestaurantRepositoryServiceDummyImpl implements RestaurantRepositor
     return objectMapper.readValue(fixture, new TypeReference<List<Restaurant>>() {
     });
   }
+  private List<Restaurant> loadRestaurantsDuringPeakHours() throws IOException {
+    String fixture =
+        FixtureHelpers.fixture(FIXTURES + "/peak_hours_list_of_restaurants.json");
+
+    return objectMapper.readValue(fixture, new TypeReference<List<Restaurant>>() {
+    });
+  }
 
   @Override
   public List<Restaurant> findAllRestaurantsCloseBy(Double latitude, Double longitude,
       LocalTime currentTime, Double servingRadiusInKms) {
     List<Restaurant> restaurantList = new ArrayList<>();
     try {
-      restaurantList = loadRestaurantsDuringNormalHours();
+      if(servingRadiusInKms == 3.0){
+        restaurantList = loadRestaurantsDuringPeakHours();
+      }
+      else{
+        restaurantList = loadRestaurantsDuringNormalHours();
+      }
+      
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -41,6 +54,7 @@ public class RestaurantRepositoryServiceDummyImpl implements RestaurantRepositor
       restaurant.setLatitude(latitude + ThreadLocalRandom.current().nextDouble(0.000001, 0.2));
       restaurant.setLongitude(longitude + ThreadLocalRandom.current().nextDouble(0.000001, 0.2));
     }
+    System.out.println("Returning " + restaurantList.size() + " restaurants");
     return restaurantList;
   }
 
