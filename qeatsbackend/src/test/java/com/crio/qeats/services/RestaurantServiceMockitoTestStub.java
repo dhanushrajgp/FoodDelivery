@@ -36,7 +36,6 @@ public class RestaurantServiceMockitoTestStub {
 
   protected ObjectMapper objectMapper = new ObjectMapper();
 
-
   protected Restaurant restaurant1;
   protected Restaurant restaurant2;
   protected Restaurant restaurant3;

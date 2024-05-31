@@ -1,7 +1,11 @@
 
 /*
  *
+<<<<<<< HEAD
  * * Copyright (c) Crio.Do 2019. All rights reserved
+=======
+ *  * Copyright (c) Crio.Do 2019. All rights reserved
+>>>>>>> d581d28d52f3987e035d702684e57d525c3d42df
  *
  */
 
@@ -26,12 +30,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Log4j2
-
 public class RestaurantServiceImpl implements RestaurantService {
 
   private final Double peakHoursServingRadiusInKms = 3.0;
   private final Double normalHoursServingRadiusInKms = 5.0;
-
   @Autowired
   private RestaurantRepositoryService restaurantRepositoryService;
 
