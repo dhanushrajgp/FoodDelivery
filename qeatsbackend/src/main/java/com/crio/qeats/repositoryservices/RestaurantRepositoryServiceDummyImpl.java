@@ -28,11 +28,6 @@ public class RestaurantRepositoryServiceDummyImpl implements RestaurantRepositor
     });
   }
 
-  // TODO: CRIO_TASK_MODULE_RESTAURANTSAPI - Use this dummy implementation.
-  // This function returns a list of restaurants in any lat/long of your choice randomly.
-  // It will load some dummy restaurants and change their latitude/longitude near
-  // the lat/long you pass. In the next module, once you start using mongodb, you will not use
-  // it anymore.
   @Override
   public List<Restaurant> findAllRestaurantsCloseBy(Double latitude, Double longitude,
       LocalTime currentTime, Double servingRadiusInKms) {
@@ -46,7 +41,6 @@ public class RestaurantRepositoryServiceDummyImpl implements RestaurantRepositor
       restaurant.setLatitude(latitude + ThreadLocalRandom.current().nextDouble(0.000001, 0.2));
       restaurant.setLongitude(longitude + ThreadLocalRandom.current().nextDouble(0.000001, 0.2));
     }
-    System.out.println(restaurantList);
     return restaurantList;
   }
 

@@ -26,7 +26,6 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
 
     // If spotbugs are enabled, the build fail for the unused variable below.
 
-
     logEventJsonObjNode.put("cause", e.toString());
 
     log.error(logEventJsonObjNode.toString(), e);
