@@ -50,9 +50,9 @@ public class Restaurant {
 
   private String imageUrl;
 
-  private double latitude;
+  private Double latitude;
   
-  private double longitude;
+  private Double longitude;
 
   @NotNull
   private String opensAt;
