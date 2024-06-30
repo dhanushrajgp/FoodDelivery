@@ -87,27 +87,29 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
   public List<Restaurant> findAllRestaurantsCloseBy(Double latitude,
       Double longitude, LocalTime currentTime, Double servingRadiusInKms) {
 
-    List<Restaurant> restaurants = new ArrayList<>();
-
-    String geoHash = GeoHash.geoHashStringWithCharacterPrecision(latitude, longitude, 
-    GlobalConstants.DEFAULT_GEOHASH_PRECISION);
-
-// Query to find restaurants with matching GeoHash and within serving radius
-List<RestaurantEntity> restaurantEntities = restaurantRepository.findAll();
-
-for (RestaurantEntity restaurantEntity : restaurantEntities) {
-    if (isRestaurantCloseByAndOpen(restaurantEntity, currentTime, latitude, longitude, 
-        servingRadiusInKms)) {
-          String sanitizedName = restaurantEntity.getName().replaceAll("[Â©éí]", "e");
- restaurantEntity.setName(sanitizedName);
-        restaurants.add(modelMapperProvider.get().map(restaurantEntity, Restaurant.class));
+    List<Restaurant> restaurants = new ArrayList<Restaurant>();
+    GeoHash geoHash = GeoHash.withCharacterPrecision(latitude, longitude, 7);
+    ObjectMapper objectMapper = new ObjectMapper();
+    String restaurantsString;
+    
+    
+    // If restaurants don't exist in cache
+    ModelMapper modelMapper = modelMapperProvider.get();
+    List<RestaurantEntity> restaurantList = restaurantRepository.findAll();
+    for (RestaurantEntity restaurantEntity: restaurantList) {
+      if (isRestaurantCloseByAndOpen(restaurantEntity, currentTime, 
+          latitude, longitude, servingRadiusInKms)) {
+        Restaurant restaurant = modelMapper.map(restaurantEntity, Restaurant.class);
+        restaurants.add(restaurant);
+      }
     }
-}
-      //CHECKSTYLE:OFF
-      //CHECKSTYLE:ON
-
-
+    try {
+      restaurantsString = objectMapper.writeValueAsString(restaurants);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
     return restaurants;
+  
   }
 
 

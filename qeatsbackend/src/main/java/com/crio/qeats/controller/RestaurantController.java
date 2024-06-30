@@ -12,6 +12,7 @@ import com.crio.qeats.exchanges.GetRestaurantsResponse;
 import com.crio.qeats.models.ErrorResponseEntity;
 import com.crio.qeats.services.RestaurantService;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -81,7 +82,12 @@ public class RestaurantController {
 
         GetRestaurantsRequest getRestaurantsRequest = new GetRestaurantsRequest(latitude, longitude);
         GetRestaurantsResponse getRestaurantsResponse = restaurantService.findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.now());
-
+        List<Restaurant> restaurants = new ArrayList<>();
+        for (Restaurant r : restaurants) {
+          String str = r.getName().replaceAll("[Â©éí]", "e");
+          r.setName(str);
+        }
+        getRestaurantsResponse.setRestaurants(restaurants);
         return ResponseEntity.ok().body(getRestaurantsResponse);
     }
   // TIP(MODULE_MENUAPI): Model Implementation for getting menu given a restaurantId.

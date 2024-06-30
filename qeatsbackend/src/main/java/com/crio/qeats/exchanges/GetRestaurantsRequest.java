@@ -26,26 +26,16 @@ import java.math.BigInteger;
 //  /qeats/v1/restaurants?latitude=28.4900591&longitude=77.536386&searchFor=tamil,
 //  this class should be able to deserialize lat/long and optional searchFor from that.
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-@JsonIgnoreProperties({"searchFor"})
+@AllArgsConstructor
 public class GetRestaurantsRequest {
-
-    @NotNull
-    private Double latitude;
-
-    @NotNull
-    private Double longitude;
-
-    public Double getLatitude() {
-        return latitude;
-    }
-
-    public Double getLongitude() {
-        return longitude;
-    }
-
-   
-
+  @NotNull
+  @Min(value = -90)
+  @Max(value = 90)
+  private Double latitude;
+  @NotNull
+  @Min(value = -180)
+  @Max(value = 180)
+  private Double longitude;
 }
 
