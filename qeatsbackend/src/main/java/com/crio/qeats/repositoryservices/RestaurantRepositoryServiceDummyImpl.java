@@ -51,12 +51,9 @@ public class RestaurantRepositoryServiceDummyImpl implements RestaurantRepositor
       e.printStackTrace();
     }
     for (Restaurant restaurant : restaurantList) {
-      String sanitizedName = restaurant.getName().replaceAll("[Â©éí]", "e");
- restaurant.setName(sanitizedName);
       restaurant.setLatitude(latitude + ThreadLocalRandom.current().nextDouble(0.000001, 0.2));
       restaurant.setLongitude(longitude + ThreadLocalRandom.current().nextDouble(0.000001, 0.2));
     }
-    System.out.println("Returning " + restaurantList.size() + " restaurants");
     return restaurantList;
   }
 

@@ -7,6 +7,7 @@
 package com.crio.qeats.repositoryservices;
 
 import ch.hsr.geohash.GeoHash;
+import com.crio.qeats.configs.RedisConfiguration;
 import com.crio.qeats.dto.Restaurant;
 import com.crio.qeats.globals.GlobalConstants;
 import com.crio.qeats.models.RestaurantEntity;
@@ -38,6 +39,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
+import redis.clients.jedis.Jedis;
 
 
 @Service
@@ -47,30 +49,14 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
   @Autowired
   private RestaurantRepository restaurantRepository;
 
+  @Autowired
+  private RedisConfiguration redisConfiguration;
 
   @Autowired
   private MongoTemplate mongoTemplate;
 
   @Autowired
   private Provider<ModelMapper> modelMapperProvider;
-
-  private static final String FIXTURES = "fixtures/exchanges";
-  private ObjectMapper objectMapper = new ObjectMapper();
-
-  private List<Restaurant> loadRestaurantsDuringNormalHours() throws IOException {
-    String fixture =
-        FixtureHelpers.fixture(FIXTURES + "/normal_hours_list_of_restaurants.json");
-
-    return objectMapper.readValue(fixture, new TypeReference<List<Restaurant>>() {
-    });
-  }
-  private List<Restaurant> loadRestaurantsDuringPeakHours() throws IOException {
-    String fixture =
-        FixtureHelpers.fixture(FIXTURES + "/peak_hours_list_of_restaurants.json");
-
-    return objectMapper.readValue(fixture, new TypeReference<List<Restaurant>>() {
-    });
-  }
 
   private boolean isOpenNow(LocalTime time, RestaurantEntity res) {
     LocalTime openingTime = LocalTime.parse(res.getOpensAt());
@@ -90,7 +76,20 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
     List<Restaurant> restaurants = new ArrayList<Restaurant>();
     GeoHash geoHash = GeoHash.withCharacterPrecision(latitude, longitude, 7);
     ObjectMapper objectMapper = new ObjectMapper();
+    Jedis jedis = redisConfiguration.getJedisPool().getResource();
     String restaurantsString;
+
+
+    if (jedis.exists(geoHash.toBase32())) {
+      restaurantsString = jedis.get(geoHash.toBase32());
+      try {
+        restaurants = objectMapper.readValue(restaurantsString, 
+                      new TypeReference<List<Restaurant>>(){});
+        return restaurants;
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
     
     
     // If restaurants don't exist in cache
@@ -105,6 +104,7 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
     }
     try {
       restaurantsString = objectMapper.writeValueAsString(restaurants);
+      jedis.set(geoHash.toBase32(),restaurantsString);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -119,10 +119,6 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
 
 
 
-  // TODO: CRIO_TASK_MODULE_NOSQL
-  // Objective:
-  // 1. Check if a restaurant is nearby and open. If so, it is a candidate to be returned.
-  // NOTE: How far exactly is "nearby"?
 
   /**
    * Utility method to check if a restaurant is within the serving radius at a given time.

@@ -27,7 +27,7 @@ public class RestaurantEntity {
   private String restaurantId;
 
   @NotNull
-  public String name;
+  private String name;
 
   @NotNull
   private String city;
@@ -36,10 +36,10 @@ public class RestaurantEntity {
   private String imageUrl;
 
   @NotNull
-  public Double latitude;
+  private Double latitude;
 
   @NotNull
-  public Double longitude;
+  private Double longitude;
 
   @NotNull
   private String opensAt;

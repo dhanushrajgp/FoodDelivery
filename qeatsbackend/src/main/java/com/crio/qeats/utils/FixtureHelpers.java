@@ -16,7 +16,6 @@ import java.nio.charset.StandardCharsets;
 /**
  * A set of helper method for fixture files.
  */
-
 public class FixtureHelpers {
 
   private FixtureHelpers() { /* singleton */ }
