@@ -27,7 +27,7 @@ public class RestaurantEntity {
   private String restaurantId;
 
   @NotNull
-  private String name;
+  public String name;
 
   @NotNull
   private String city;

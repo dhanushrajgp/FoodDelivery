@@ -98,6 +98,8 @@ List<RestaurantEntity> restaurantEntities = restaurantRepository.findAll();
 for (RestaurantEntity restaurantEntity : restaurantEntities) {
     if (isRestaurantCloseByAndOpen(restaurantEntity, currentTime, latitude, longitude, 
         servingRadiusInKms)) {
+          String sanitizedName = restaurantEntity.getName().replaceAll("[Â©éí]", "e");
+ restaurantEntity.setName(sanitizedName);
         restaurants.add(modelMapperProvider.get().map(restaurantEntity, Restaurant.class));
     }
 }
