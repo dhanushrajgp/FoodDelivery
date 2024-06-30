@@ -36,6 +36,8 @@ import org.springframework.web.bind.annotation.RestController;
 // Remember, annotations have various "targets". They can be class level, method level or others.
 
 @RestController
+@Log4j2
+@RequestMapping(RestaurantController.RESTAURANT_API_ENDPOINT)
 public class RestaurantController {
 
   public static final String RESTAURANT_API_ENDPOINT = "/qeats/v1";
@@ -79,29 +81,6 @@ public class RestaurantController {
       return ResponseEntity.badRequest().body(null);
     }
   }
-
-
-  @GetMapping(RESTAURANT_API_ENDPOINT + RESTAURANTS_API)
-  public ResponseEntity<?> getAllRestaurants(
-            @RequestParam(value = "latitude") @Min(-90) @Max(90) Double latitude,
-            @RequestParam(value = "longitude") @Min(-180) @Max(180) Double longitude) {
-
-        if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new ErrorResponseEntity("Invalid latitude or longitude values. Latitude must be between -90 and 90, longitude must be between -180 and 180."));
-        }
-
-        GetRestaurantsRequest getRestaurantsRequest = new GetRestaurantsRequest(latitude, longitude);
-        GetRestaurantsResponse getRestaurantsResponse = restaurantService.findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.now());
-        List<Restaurant> restaurants = new ArrayList<>();
-        for (Restaurant r : restaurants) {
-          String str = r.getName().replaceAll("[Â©éí]", "e");
-          r.setName(str);
-        }
-        getRestaurantsResponse.setRestaurants(restaurants);
-        return ResponseEntity.ok().body(getRestaurantsResponse);
-    }
   // TIP(MODULE_MENUAPI): Model Implementation for getting menu given a restaurantId.
   // Get the Menu for the given restaurantId
   // API URI: /qeats/v1/menu?restaurantId=11
