@@ -70,8 +70,8 @@ public class RestaurantController {
 
   @GetMapping(RESTAURANT_API_ENDPOINT + RESTAURANTS_API)
   public ResponseEntity<?> getAllRestaurants(
-            @RequestParam(value = "latitude") @Min(-90) @Max(90) double latitude,
-            @RequestParam(value = "longitude") @Min(-180) @Max(180) double longitude) {
+            @RequestParam(value = "latitude") @Min(-90) @Max(90) Double latitude,
+            @RequestParam(value = "longitude") @Min(-180) @Max(180) Double longitude) {
 
         if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
             return ResponseEntity
