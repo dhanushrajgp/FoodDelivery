@@ -25,8 +25,7 @@ public interface RestaurantRepositoryService {
    * @return list of open restaurants within the specified radius or
    *     empty list if there is none
    */
-  List<Restaurant> findAllRestaurantsCloseBy(Double latitude, Double longitude,
-      LocalTime currentTime, Double servingRadiusInKms);
+  List<Restaurant> findAllRestaurantsCloseBy(Double latitude, Double longitude,LocalTime currentTime, Double servingRadiusInKms);
 
 }
 

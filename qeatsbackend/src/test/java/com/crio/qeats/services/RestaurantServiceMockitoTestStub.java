@@ -1,4 +1,3 @@
-
 package com.crio.qeats.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -82,7 +81,7 @@ public class RestaurantServiceMockitoTestStub {
     // Notes - You can create additional mocks, setup the same and try out.
 
 
-    when(restaurantRepositoryServiceMock
+    lenient().when(restaurantRepositoryServiceMock
             .findAllRestaurantsCloseBy(eq(20.0), eq(30.0),
                 eq(LocalTime.of(3, 0)),
                 eq(5.0))) 

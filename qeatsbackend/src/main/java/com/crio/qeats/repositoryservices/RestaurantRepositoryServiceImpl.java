@@ -11,6 +11,7 @@ import com.crio.qeats.dto.Restaurant;
 import com.crio.qeats.globals.GlobalConstants;
 import com.crio.qeats.models.RestaurantEntity;
 import com.crio.qeats.repositories.RestaurantRepository;
+import com.crio.qeats.utils.FixtureHelpers;
 import com.crio.qeats.utils.GeoLocation;
 import com.crio.qeats.utils.GeoUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -52,6 +53,24 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
 
   @Autowired
   private Provider<ModelMapper> modelMapperProvider;
+
+  private static final String FIXTURES = "fixtures/exchanges";
+  private ObjectMapper objectMapper = new ObjectMapper();
+
+  private List<Restaurant> loadRestaurantsDuringNormalHours() throws IOException {
+    String fixture =
+        FixtureHelpers.fixture(FIXTURES + "/normal_hours_list_of_restaurants.json");
+
+    return objectMapper.readValue(fixture, new TypeReference<List<Restaurant>>() {
+    });
+  }
+  private List<Restaurant> loadRestaurantsDuringPeakHours() throws IOException {
+    String fixture =
+        FixtureHelpers.fixture(FIXTURES + "/peak_hours_list_of_restaurants.json");
+
+    return objectMapper.readValue(fixture, new TypeReference<List<Restaurant>>() {
+    });
+  }
 
   private boolean isOpenNow(LocalTime time, RestaurantEntity res) {
     LocalTime openingTime = LocalTime.parse(res.getOpensAt());

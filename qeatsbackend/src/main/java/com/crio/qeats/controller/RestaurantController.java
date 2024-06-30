@@ -6,10 +6,13 @@
 
 package com.crio.qeats.controller;
 
+import com.crio.qeats.dto.Restaurant;
 import com.crio.qeats.exchanges.GetRestaurantsRequest;
 import com.crio.qeats.exchanges.GetRestaurantsResponse;
+import com.crio.qeats.models.ErrorResponseEntity;
 import com.crio.qeats.services.RestaurantService;
 import java.time.LocalTime;
+import java.util.List;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import org.apache.logging.log4j.LogManager;
@@ -59,23 +62,28 @@ public class RestaurantController {
           .findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.now());
       log.info("getRestaurants returned {}", getRestaurantsResponse);
       //CHECKSTYLE:ON
+    
 
     return ResponseEntity.ok().body(getRestaurantsResponse);
   }
 
 
   @GetMapping(RESTAURANT_API_ENDPOINT + RESTAURANTS_API)
-  public ResponseEntity<String> getAllRestaurants(@RequestParam(value = "latitude") @Min(-90) @Max(90) double latitude,
-  @RequestParam(value = "longitude") @Min(-180) @Max(180) double longitude){
+  public ResponseEntity<?> getAllRestaurants(
+            @RequestParam(value = "latitude") @Min(-90) @Max(90) double latitude,
+            @RequestParam(value = "longitude") @Min(-180) @Max(180) double longitude) {
 
-    if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-              .body("Invalid latitude or longitude values");
-      }
+        if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new ErrorResponseEntity("Invalid latitude or longitude values. Latitude must be between -90 and 90, longitude must be between -180 and 180."));
+        }
 
-    return ResponseEntity.ok("hello");
-  }
+        GetRestaurantsRequest getRestaurantsRequest = new GetRestaurantsRequest(latitude, longitude);
+        GetRestaurantsResponse getRestaurantsResponse = restaurantService.findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.now());
 
+        return ResponseEntity.ok().body(getRestaurantsResponse);
+    }
   // TIP(MODULE_MENUAPI): Model Implementation for getting menu given a restaurantId.
   // Get the Menu for the given restaurantId
   // API URI: /qeats/v1/menu?restaurantId=11

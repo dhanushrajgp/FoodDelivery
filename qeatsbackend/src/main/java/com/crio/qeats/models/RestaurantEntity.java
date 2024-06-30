@@ -36,10 +36,10 @@ public class RestaurantEntity {
   private String imageUrl;
 
   @NotNull
-  private Double latitude;
+  public Double latitude;
 
   @NotNull
-  private Double longitude;
+  public Double longitude;
 
   @NotNull
   private String opensAt;

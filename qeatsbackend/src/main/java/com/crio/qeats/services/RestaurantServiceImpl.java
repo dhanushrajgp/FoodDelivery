@@ -1,11 +1,6 @@
-
 /*
  *
-<<<<<<< HEAD
  * * Copyright (c) Crio.Do 2019. All rights reserved
-=======
- *  * Copyright (c) Crio.Do 2019. All rights reserved
->>>>>>> d581d28d52f3987e035d702684e57d525c3d42df
  *
  */
 
@@ -63,4 +58,3 @@ public class RestaurantServiceImpl implements RestaurantService {
 
 
 }
-

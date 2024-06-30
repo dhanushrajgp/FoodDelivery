@@ -62,6 +62,8 @@ public class Restaurant {
 
   private List<String> attributes = new ArrayList<>();
 
+  
+
 
 }
 
