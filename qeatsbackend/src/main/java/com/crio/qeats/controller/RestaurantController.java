@@ -57,15 +57,27 @@ public class RestaurantController {
     Logger log = LogManager.getLogger(RestaurantController.class);
     log.info("getRestaurants called with {}", getRestaurantsRequest);
     GetRestaurantsResponse getRestaurantsResponse;
+    if (getRestaurantsRequest.getLatitude() != null && getRestaurantsRequest.getLongitude() != null
+        && getRestaurantsRequest.getLatitude() >= -90 && getRestaurantsRequest.getLatitude() <= 90
+        && getRestaurantsRequest.getLongitude() >= -180 
+        && getRestaurantsRequest.getLongitude() <= 180) {
 
-      //CHECKSTYLE:OFF
-      getRestaurantsResponse = restaurantService
+      List<Restaurant> restaurants = new ArrayList<>();
+
+        getRestaurantsResponse = restaurantService
           .findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.now());
+        restaurants = getRestaurantsResponse.getRestaurants();
+      
+      for (Restaurant r : restaurants) {
+        String str = r.getName().replaceAll("[Â©éí]", "e");
+        r.setName(str);
+      }
       log.info("getRestaurants returned {}", getRestaurantsResponse);
-      //CHECKSTYLE:ON
-    
-
-    return ResponseEntity.ok().body(getRestaurantsResponse);
+      getRestaurantsResponse.setRestaurants(restaurants);
+      return ResponseEntity.ok().body(getRestaurantsResponse);
+    } else {
+      return ResponseEntity.badRequest().body(null);
+    }
   }
 
 
