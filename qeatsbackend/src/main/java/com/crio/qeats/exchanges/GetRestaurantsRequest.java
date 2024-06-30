@@ -32,16 +32,16 @@ import java.math.BigInteger;
 public class GetRestaurantsRequest {
 
     @NotNull
-    private double latitude;
+    private Double latitude;
 
     @NotNull
-    private double longitude;
+    private Double longitude;
 
-    public double getLatitude() {
+    public Double getLatitude() {
         return latitude;
     }
 
-    public double getLongitude() {
+    public Double getLongitude() {
         return longitude;
     }
 
