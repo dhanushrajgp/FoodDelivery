@@ -107,5 +107,56 @@ public class RestaurantServiceImpl implements RestaurantService {
      return response;
   }
 
+ 
+  // TODO: CRIO_TASK_MODULE_MULTITHREADING
+  // Implement multi-threaded version of RestaurantSearch.
+  // Implement variant of findRestaurantsBySearchQuery which is at least 1.5x time faster than
+  // findRestaurantsBySearchQuery.
+  @Override
+  public GetRestaurantsResponse findRestaurantsBySearchQueryMt(
+      GetRestaurantsRequest getRestaurantsRequest, LocalTime currentTime) {
+        Double servingRadiusInKms = isPeakHour(currentTime) 
+        ? peakHoursServingRadiusInKms : normalHoursServingRadiusInKms;
+    
+    String searchString = getRestaurantsRequest.getSearchFor();
+    List<Restaurant> restaurants;
+    if (!searchString.isEmpty()) {
+      Future<List<Restaurant>> futureRestaurantsByName = restaurantRepositoryService
+          .findRestaurantsByNameAsync(getRestaurantsRequest.getLatitude(), 
+          getRestaurantsRequest.getLongitude(), searchString, currentTime, servingRadiusInKms);
+      Future<List<Restaurant>> futureRestaurantsByAttributes = restaurantRepositoryService
+          .findRestaurantsByAttributesAsync(getRestaurantsRequest.getLatitude(), 
+          getRestaurantsRequest.getLongitude(), searchString, currentTime, servingRadiusInKms);
+
+      List<Restaurant> restaurantsByName;
+      List<Restaurant> restaurantsByAttributes;
+
+      try {
+        while (true) {
+          if (futureRestaurantsByName.isDone() && futureRestaurantsByAttributes.isDone()) {
+            restaurantsByName = futureRestaurantsByName.get();
+            restaurantsByAttributes = futureRestaurantsByAttributes.get();
+            break;
+          }
+        }
+      } catch (InterruptedException | ExecutionException e) {
+        e.printStackTrace();
+        return new GetRestaurantsResponse(new ArrayList<>());
+      }
+
+      Map<String,Restaurant> restaurantMap = new HashMap<>();
+      for (Restaurant r: restaurantsByName) {
+        restaurantMap.put(r.getRestaurantId(), r);
+      }
+      for (Restaurant r: restaurantsByAttributes) {
+        restaurantMap.put(r.getRestaurantId(), r);
+      }
+      restaurants = new ArrayList<>(restaurantMap.values());
+    } else {
+      restaurants = new ArrayList<>();
+    }
+
+    return new GetRestaurantsResponse(restaurants);
+  }
 }
 

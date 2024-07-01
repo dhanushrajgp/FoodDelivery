@@ -65,6 +65,22 @@ public interface RestaurantRepositoryService {
   List<Restaurant> findRestaurantsByItemAttributes(Double latitude, Double longitude,
       String searchString, LocalTime currentTime, Double servingRadiusInKms);
 
+
+      @Async
+      Future<List<Restaurant>> findRestaurantsByNameAsync(Double latitude, Double longitude,
+          String searchString, LocalTime currentTime, Double servingRadiusInKms);
+    
+      @Async
+      Future<List<Restaurant>> findRestaurantsByAttributesAsync(Double latitude, Double longitude,
+          String searchString, LocalTime currentTime, Double servingRadiusInKms);
+    
+      @Async
+      Future<List<Restaurant>> findRestaurantsByItemNameAsync(Double latitude, Double longitude,
+          String searchString, LocalTime currentTime, Double servingRadiusInKms);
+      
+      @Async
+      Future<List<Restaurant>> findRestaurantsByItemAttributesAsync(Double latitude, Double longitude,
+          String searchString, LocalTime currentTime, Double servingRadiusInKms);
 }
 
 

@@ -79,6 +79,30 @@ public class RestaurantRepositoryServiceDummyImpl implements RestaurantRepositor
       String searchString, LocalTime currentTime, Double servingRadiusInKms) {
     return null;
   }
+  @Override
+  public Future<List<Restaurant>> findRestaurantsByNameAsync(Double latitude, Double longitude,
+      String searchString, LocalTime currentTime, Double servingRadiusInKms) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+  @Override
+  public Future<List<Restaurant>> findRestaurantsByAttributesAsync(Double latitude,
+      Double longitude, String searchString, LocalTime currentTime, Double servingRadiusInKms) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+  @Override
+  public Future<List<Restaurant>> findRestaurantsByItemNameAsync(Double latitude, Double longitude,
+      String searchString, LocalTime currentTime, Double servingRadiusInKms) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+  @Override
+  public Future<List<Restaurant>> findRestaurantsByItemAttributesAsync(Double latitude,
+      Double longitude, String searchString, LocalTime currentTime, Double servingRadiusInKms) {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
 
 }
