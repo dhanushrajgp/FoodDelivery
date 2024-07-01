@@ -88,10 +88,122 @@ class RestaurantServiceTest {
     // 1. If the mocked service methods are being called
     // 2. If the expected restaurants are being returned
     // HINT: Use the `loadRestaurantsDuringNormalHours` utility method to speed things up
-    assertEquals(getServingRadius(loadRestaurantsDuringNormalHours(), LocalTime.of(16,0)),"5.0");
+    List<Restaurant> restaurants = loadRestaurantsDuringNormalHours();
+    when(restaurantRepositoryServiceMock
+      .findAllRestaurantsCloseBy(any(Double.class), any(Double.class), any(LocalTime.class), 
+      any(Double.class)))
+      .thenReturn(restaurants);
+    GetRestaurantsResponse allRestaurantsCloseBy = restaurantService
+        .findAllRestaurantsCloseBy(new GetRestaurantsRequest(20.0,30.0), LocalTime.of(22,0));
+    assertEquals(3, allRestaurantsCloseBy.getRestaurants().size());
+    assertEquals("10", allRestaurantsCloseBy.getRestaurants().get(0).getRestaurantId());
+    assertEquals("11", allRestaurantsCloseBy.getRestaurants().get(1).getRestaurantId());
+    assertEquals("12", allRestaurantsCloseBy.getRestaurants().get(2).getRestaurantId());
+    ArgumentCaptor<Double> servingRadiusInKms = ArgumentCaptor.forClass(Double.class);
+    verify(restaurantRepositoryServiceMock, times(1))
+        .findAllRestaurantsCloseBy(any(Double.class), any(Double.class), 
+        any(LocalTime.class), servingRadiusInKms.capture());
+    assertEquals(servingRadiusInKms.getValue().toString(), "5.0");
   }
 
 
+
+  @Test
+  void normalHourFindRestaurantsSearchQuery() throws IOException {
+    when(restaurantRepositoryServiceMock.findRestaurantsByName(any(Double.class),
+        any(Double.class), any(String.class), any(LocalTime.class), any(Double.class)))
+        .thenReturn(loadRestaurantsDuringNormalHours());
+    when(restaurantRepositoryServiceMock.findRestaurantsByAttributes(any(Double.class),
+        any(Double.class), any(String.class), any(LocalTime.class), any(Double.class)))
+        .thenReturn(loadRestaurantsSearchedByAttributes());
+
+    GetRestaurantsRequest getRestaurantsRequest = new GetRestaurantsRequest(20.0, 30.0);
+    getRestaurantsRequest.setSearchFor("Test");
+
+    GetRestaurantsResponse allRestaurantsSearchResults = restaurantService
+        .findRestaurantsBySearchQuery(getRestaurantsRequest, LocalTime.of(22, 0));
+
+    verify(restaurantRepositoryServiceMock, times(1))
+        .findRestaurantsByName(any(Double.class), any(Double.class), any(String.class),
+            any(LocalTime.class), any(Double.class));
+    verify(restaurantRepositoryServiceMock, times(1))
+        .findRestaurantsByAttributes(any(Double.class), any(Double.class), any(String.class),
+            any(LocalTime.class), any(Double.class));
+    assertEquals(4, allRestaurantsSearchResults.getRestaurants().size());
+    assertEquals("10", allRestaurantsSearchResults.getRestaurants().get(0).getRestaurantId());
+    assertEquals("11", allRestaurantsSearchResults.getRestaurants().get(1).getRestaurantId());
+    assertEquals("12", allRestaurantsSearchResults.getRestaurants().get(2).getRestaurantId());
+    assertEquals("abcdc864835e31495d621234",
+        allRestaurantsSearchResults.getRestaurants().get(3).getRestaurantId());
+
+    ArgumentCaptor<Double> servingRadiusInKms = ArgumentCaptor.forClass(Double.class);
+    verify(restaurantRepositoryServiceMock, times(1))
+        .findRestaurantsByName(any(Double.class), any(Double.class), any(String.class),
+            any(LocalTime.class), servingRadiusInKms.capture());
+    assertEquals(servingRadiusInKms.getValue().toString(), "5.0");
+
+    verify(restaurantRepositoryServiceMock, times(1))
+        .findRestaurantsByAttributes(any(Double.class), any(Double.class), any(String.class),
+            any(LocalTime.class), servingRadiusInKms.capture());
+    assertEquals(servingRadiusInKms.getValue().toString(), "5.0");
+  }
+
+  @Test
+  void peakHourFindRestaurantsSearchQuery() throws IOException {
+    when(restaurantRepositoryServiceMock.findRestaurantsByName(any(Double.class),
+        any(Double.class), any(String.class), any(LocalTime.class), any(Double.class)))
+        .thenReturn(loadRestaurantsDuringPeakHours());
+    when(restaurantRepositoryServiceMock.findRestaurantsByAttributes(any(Double.class),
+        any(Double.class), any(String.class), any(LocalTime.class), any(Double.class)))
+        .thenReturn(loadRestaurantsSearchedByAttributes());
+
+    GetRestaurantsRequest getRestaurantsRequest = new GetRestaurantsRequest(20.0, 30.0);
+    getRestaurantsRequest.setSearchFor("Test");
+
+    GetRestaurantsResponse allRestaurantsSearchResults = restaurantService
+        .findRestaurantsBySearchQuery(getRestaurantsRequest, LocalTime.of(20, 0));
+
+    verify(restaurantRepositoryServiceMock, times(1))
+        .findRestaurantsByName(any(Double.class), any(Double.class), any(String.class),
+            any(LocalTime.class), any(Double.class));
+    verify(restaurantRepositoryServiceMock, times(1))
+        .findRestaurantsByAttributes(any(Double.class), any(Double.class), any(String.class),
+            any(LocalTime.class), any(Double.class));
+    assertEquals(3, allRestaurantsSearchResults.getRestaurants().size());
+    assertEquals("11", allRestaurantsSearchResults.getRestaurants().get(0).getRestaurantId());
+    assertEquals("12", allRestaurantsSearchResults.getRestaurants().get(1).getRestaurantId());
+    assertEquals("abcdc864835e31495d621234",
+        allRestaurantsSearchResults.getRestaurants().get(2).getRestaurantId());
+
+
+    ArgumentCaptor<Double> servingRadiusInKms = ArgumentCaptor.forClass(Double.class);
+    verify(restaurantRepositoryServiceMock, times(1))
+        .findRestaurantsByName(any(Double.class), any(Double.class), any(String.class),
+            any(LocalTime.class), servingRadiusInKms.capture());
+    assertEquals(servingRadiusInKms.getValue().toString(), "3.0");
+
+    verify(restaurantRepositoryServiceMock, times(1))
+        .findRestaurantsByAttributes(any(Double.class), any(Double.class), any(String.class),
+            any(LocalTime.class), servingRadiusInKms.capture());
+    assertEquals(servingRadiusInKms.getValue().toString(), "3.0");
+  }
+
+  @Test
+  void findRestaurantsSearchQueryIsEmpty() {
+    GetRestaurantsRequest getRestaurantsRequest = new GetRestaurantsRequest(20.0, 30.0);
+    getRestaurantsRequest.setSearchFor("");
+
+    GetRestaurantsResponse allRestaurantsCloseBy = restaurantService
+        .findRestaurantsBySearchQuery(getRestaurantsRequest, LocalTime.of(22, 0));
+
+    verify(restaurantRepositoryServiceMock, times(0))
+        .findRestaurantsByName(any(Double.class), any(Double.class), any(String.class),
+            any(LocalTime.class), any(Double.class));
+    verify(restaurantRepositoryServiceMock, times(0))
+        .findRestaurantsByAttributes(any(Double.class), any(Double.class), any(String.class),
+            any(LocalTime.class), any(Double.class));
+    assertEquals(0, allRestaurantsCloseBy.getRestaurants().size());
+  }
 
   
   private List<Restaurant> loadRestaurantsDuringNormalHours() throws IOException {

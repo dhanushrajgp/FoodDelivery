@@ -15,6 +15,7 @@ import com.google.common.base.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -26,8 +27,8 @@ import java.math.BigInteger;
 //  /qeats/v1/restaurants?latitude=28.4900591&longitude=77.536386&searchFor=tamil,
 //  this class should be able to deserialize lat/long and optional searchFor from that.
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class GetRestaurantsRequest {
   @NotNull
   @Min(value = -90)
@@ -37,5 +38,13 @@ public class GetRestaurantsRequest {
   @Min(value = -180)
   @Max(value = 180)
   private Double longitude;
+
+  private String searchFor;
+
+  public GetRestaurantsRequest(@NotNull @Min(value = -90) @Max(value = 90) Double latitude, 
+  @NotNull @Min(value = -180) @Max(value = 180) Double longitude) {
+this.latitude = latitude;
+this.longitude = longitude;
+}
 }
 

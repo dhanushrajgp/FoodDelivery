@@ -31,9 +31,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-// TODO: CRIO_TASK_MODULE_RESTAURANTSAPI
-// Implement Controller using Spring annotations.
-// Remember, annotations have various "targets". They can be class level, method level or others.
 
 @RestController
 @Log4j2
@@ -66,9 +63,19 @@ public class RestaurantController {
 
       List<Restaurant> restaurants = new ArrayList<>();
 
+      if(getRestaurantsRequest.getSearchFor() != null && !getRestaurantsRequest.getSearchFor().isEmpty()){
+          getRestaurantsResponse = restaurantService.findRestaurantsBySearchQuery(getRestaurantsRequest, LocalTime.now());
+          if(getRestaurantsResponse == null){
+            return ResponseEntity.ok().body(null);
+          }
+          restaurants = getRestaurantsResponse.getRestaurants();
+      }
+      else{
         getRestaurantsResponse = restaurantService
-          .findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.now());
-        restaurants = getRestaurantsResponse.getRestaurants();
+        .findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.now());
+      restaurants = getRestaurantsResponse.getRestaurants();
+      }
+        
       
       for (Restaurant r : restaurants) {
         String str = r.getName().replaceAll("[Â©éí]", "e");
